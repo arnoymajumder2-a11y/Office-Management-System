@@ -1,0 +1,7 @@
+<?php require 'config.php';
+if(!empty($_SESSION['admin_id']))go();
+$error='';
+if($_SERVER['REQUEST_METHOD']==='POST'){check_csrf();$q=$pdo->prepare('SELECT id,name,password FROM admins WHERE email=?');$q->execute([trim($_POST['email']??'')]);$u=$q->fetch();
+if($u&&password_verify($_POST['password']??'',$u['password'])){$_SESSION['admin_id']=$u['id'];$_SESSION['admin_name']=$u['name'];go();}$error='Incorrect email or password.';}
+?>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OfficeFlow · Sign in</title><link rel="stylesheet" href="assets/style.css"></head><body class="loginpage"><form class="loginbox" method="post"><div class="loginlogo">OfficeFlow</div><h1>Welcome back</h1><p class="sub">Sign in to manage your workplace.</p><?php if($error):?><div class="alert error"><?=h($error)?></div><?php endif?><input type="hidden" name="csrf" value="<?=h(csrf())?>"><div class="field"><label>Email address</label><input type="email" name="email" required value="admin@officeflow.local"></div><div class="field"><label>Password</label><input type="password" name="password" required placeholder="Enter password"></div><button class="btn">Sign in →</button><div class="loginhint">Demo login: admin@officeflow.local<br>Password: Admin@123</div><div class="footnote">OfficeFlow · Office Management System</div></form></body></html>
